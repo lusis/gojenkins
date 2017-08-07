@@ -33,7 +33,7 @@ type Node struct {
 	Base    string
 }
 
-// CurrentExecutable represents a CurrentExecutable on an Executor
+// Executable represents a Executable on an Executor
 type Executable struct {
 	Number    int    `json:"number"`
 	URL       string `json:"url"`
@@ -58,7 +58,12 @@ type NodeResponse struct {
 	Actions     []interface{} `json:"actions"`
 	DisplayName string        `json:"displayName"`
 	Executors   []struct {
-		CurrentExecutable Executable `json:"currentExecutable"`
+		CurrentExecutable interface{} `json:"currentExecutable"`
+		CurrentWorkUnit   interface{} `json:"currentWorkUnit"`
+		Idle              bool        `json:"idle"`
+		LikelyStuck       bool        `json:"likleyStuck"`
+		Number            int         `json:"number"`
+		Progress          int         `json:"progress"`
 	} `json:"executors"`
 	Icon                string   `json:"icon"`
 	IconClassName       string   `json:"iconClassName"`
@@ -77,12 +82,19 @@ type NodeResponse struct {
 		Hudson_NodeMonitors_SwapSpaceMonitor      interface{} `json:"hudson.node_monitors.SwapSpaceMonitor"`
 		Hudson_NodeMonitors_TemporarySpaceMonitor interface{} `json:"hudson.node_monitors.TemporarySpaceMonitor"`
 	} `json:"monitorData"`
-	NumExecutors       int64           `json:"numExecutors"`
-	Offline            bool            `json:"offline"`
-	OfflineCause       struct{}        `json:"offlineCause"`
-	OfflineCauseReason string          `json:"offlineCauseReason"`
-	OneOffExecutors    []BuildResponse `json:"oneOffExecutors"`
-	TemporarilyOffline bool            `json:"temporarilyOffline"`
+	NumExecutors       int64    `json:"numExecutors"`
+	Offline            bool     `json:"offline"`
+	OfflineCause       struct{} `json:"offlineCause"`
+	OfflineCauseReason string   `json:"offlineCauseReason"`
+	OneOffExecutors    []struct {
+		CurrentExecutable interface{} `json:"currentExecutable"`
+		CurrentWorkUnit   interface{} `json:"currentWorkUnit"`
+		Idle              bool        `json:"idle"`
+		LikelyStuck       bool        `json:"likleyStuck"`
+		Number            int         `json:"number"`
+		Progress          int         `json:"progress"`
+	} `json:"oneOffExecutors"`
+	TemporarilyOffline bool `json:"temporarilyOffline"`
 }
 
 // Info returns a node's info
@@ -109,8 +121,8 @@ func (n *Node) Delete() (bool, error) {
 }
 
 // GetExecutors returns all executors
-func (n *Node) GetExecutors() ([]CurrentExecutable, error) {
-	collection := []CurrentExecutable{}
+func (n *Node) GetExecutors() (interface{}, error) {
+	var collection []interface{}
 	_, err := n.Poll()
 	if err != nil {
 		return collection, err
@@ -119,8 +131,8 @@ func (n *Node) GetExecutors() ([]CurrentExecutable, error) {
 }
 
 // GetOneOffExecutors returns all executors
-func (n *Node) GetOneOffExecutors() ([]CurrentExecutable, error) {
-	collection := []CurrentExecutable{}
+func (n *Node) GetOneOffExecutors() (interface{}, error) {
+	var collection []interface{}
 	_, err := n.Poll()
 	if err != nil {
 		return collection, err
