@@ -34,7 +34,7 @@ type Node struct {
 }
 
 // CurrentExecutable represents a CurrentExecutable on an Executor
-type CurrentExecutable struct {
+type Executable struct {
 	Number    int    `json:"number"`
 	URL       string `json:"url"`
 	SubBuilds []struct {
@@ -55,16 +55,18 @@ type CurrentExecutable struct {
 
 // NodeResponse represents a node response
 type NodeResponse struct {
-	Actions             []interface{}       `json:"actions"`
-	DisplayName         string              `json:"displayName"`
-	Executors           []CurrentExecutable `json:"executors"`
-	Icon                string              `json:"icon"`
-	IconClassName       string              `json:"iconClassName"`
-	Idle                bool                `json:"idle"`
-	JnlpAgent           bool                `json:"jnlpAgent"`
-	LaunchSupported     bool                `json:"launchSupported"`
-	LoadStatistics      struct{}            `json:"loadStatistics"`
-	ManualLaunchAllowed bool                `json:"manualLaunchAllowed"`
+	Actions     []interface{} `json:"actions"`
+	DisplayName string        `json:"displayName"`
+	Executors   []struct {
+		CurrentExecutable Executable `json:"currentExecutable"`
+	} `json:"executors"`
+	Icon                string   `json:"icon"`
+	IconClassName       string   `json:"iconClassName"`
+	Idle                bool     `json:"idle"`
+	JnlpAgent           bool     `json:"jnlpAgent"`
+	LaunchSupported     bool     `json:"launchSupported"`
+	LoadStatistics      struct{} `json:"loadStatistics"`
+	ManualLaunchAllowed bool     `json:"manualLaunchAllowed"`
 	MonitorData         struct {
 		Hudson_NodeMonitors_ArchitectureMonitor interface{} `json:"hudson.node_monitors.ArchitectureMonitor"`
 		Hudson_NodeMonitors_ClockMonitor        interface{} `json:"hudson.node_monitors.ClockMonitor"`
@@ -75,12 +77,12 @@ type NodeResponse struct {
 		Hudson_NodeMonitors_SwapSpaceMonitor      interface{} `json:"hudson.node_monitors.SwapSpaceMonitor"`
 		Hudson_NodeMonitors_TemporarySpaceMonitor interface{} `json:"hudson.node_monitors.TemporarySpaceMonitor"`
 	} `json:"monitorData"`
-	NumExecutors       int64               `json:"numExecutors"`
-	Offline            bool                `json:"offline"`
-	OfflineCause       struct{}            `json:"offlineCause"`
-	OfflineCauseReason string              `json:"offlineCauseReason"`
-	OneOffExecutors    []CurrentExecutable `json:"oneOffExecutors"`
-	TemporarilyOffline bool                `json:"temporarilyOffline"`
+	NumExecutors       int64           `json:"numExecutors"`
+	Offline            bool            `json:"offline"`
+	OfflineCause       struct{}        `json:"offlineCause"`
+	OfflineCauseReason string          `json:"offlineCauseReason"`
+	OneOffExecutors    []BuildResponse `json:"oneOffExecutors"`
+	TemporarilyOffline bool            `json:"temporarilyOffline"`
 }
 
 // Info returns a node's info
