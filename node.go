@@ -58,7 +58,7 @@ type NodeResponse struct {
 	Actions     []interface{} `json:"actions"`
 	DisplayName string        `json:"displayName"`
 	Executors   []struct {
-		CurrentExecutable interface{} `json:"currentExecutable"`
+		CurrentExecutable Executable  `json:"currentExecutable"`
 		CurrentWorkUnit   interface{} `json:"currentWorkUnit"`
 		Idle              bool        `json:"idle"`
 		LikelyStuck       bool        `json:"likleyStuck"`
