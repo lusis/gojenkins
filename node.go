@@ -106,6 +106,26 @@ func (n *Node) Delete() (bool, error) {
 	return resp.StatusCode == 200, nil
 }
 
+// GetExecutors returns all executors
+func (n *Node) GetExecutors() ([]CurrentExecutable, error) {
+	collection := []CurrentExecutable{}
+	_, err := n.Poll()
+	if err != nil {
+		return collection, err
+	}
+	return n.Raw.Executors, nil
+}
+
+// GetOneOffExecutors returns all executors
+func (n *Node) GetOneOffExecutors() ([]CurrentExecutable, error) {
+	collection := []CurrentExecutable{}
+	_, err := n.Poll()
+	if err != nil {
+		return collection, err
+	}
+	return n.Raw.OneOffExecutors, nil
+}
+
 // IsOnline returns if a node is online
 func (n *Node) IsOnline() (bool, error) {
 	_, err := n.Poll()
