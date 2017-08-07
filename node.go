@@ -194,7 +194,9 @@ func (n *Node) ToggleTemporarilyOffline(options ...interface{}) (bool, error) {
 
 // Poll polls a node
 func (n *Node) Poll() (int, error) {
-	response, err := n.Jenkins.Requester.GetJSON(n.Base, n.Raw, nil)
+	qp := make(map[string]string)
+	qp["depth"] = "2"
+	response, err := n.Jenkins.Requester.GetJSON(n.Base, n.Raw, qp)
 	if err != nil {
 		return 0, err
 	}
