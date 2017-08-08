@@ -33,6 +33,52 @@ type Node struct {
 	Base    string
 }
 
+// OneOffExecutor represents a OneOffExecutor
+type OneOffExecutor struct {
+	CurrentExecutable OneOffExecutable `json:"currentExecutable"`
+	CurrentWorkUnit   interface{}      `json:"currentWorkUnit"`
+	Idle              bool             `json:"idle"`
+	LikelyStuck       bool             `json:"likelyStuck"`
+	Number            int              `json:"number"`
+	Progress          int              `json:"progress"`
+}
+
+// OneOffExecutable represents an Executable for One Off tasks
+type OneOffExecutable struct {
+	Class             string        `json:"_class"`
+	Actions           []interface{} `json:"actions"`
+	Artifacts         []interface{} `json:"artifacts"`
+	Building          bool          `json:"building"`
+	Description       string        `json:"description"`
+	DisplayName       string        `json:"displayName"`
+	Duration          int64         `json:"duration"`
+	EstimatedDuration int64         `json:"estimatedDuration"`
+	Executor          struct {
+		Class string `json:"_class"`
+	} `json:"executor"`
+	FullDisplayName string      `json:"fullDisplayName"`
+	ID              string      `json:"id"`
+	KeepLog         bool        `json:"keepLog"`
+	Number          int64       `json:"number"`
+	QueueID         int64       `json:"queueId"`
+	Result          interface{} `json:"result"`
+	Timestamp       int64       `json:"timestamp"`
+	URL             string      `json:"url"`
+	ChangeSets      interface{} `json:"changeSets"`
+	NextBuild       JobBuild    `json:"nextBuild"`
+	PreviousBuild   JobBuild    `json:"previousBuild"`
+}
+
+// Executor represents an Executor
+type NormalExecutor struct {
+	CurrentExecutable Executable  `json:"currentExecutable"`
+	CurrentWorkUnit   interface{} `json:"currentWorkUnit"`
+	Idle              bool        `json:"idle"`
+	LikelyStuck       bool        `json:"likelyStuck"`
+	Number            int         `json:"number"`
+	Progress          int         `json:"progress"`
+}
+
 // Executable represents a Executable on an Executor
 type Executable struct {
 	Number    int    `json:"number"`
@@ -55,23 +101,16 @@ type Executable struct {
 
 // NodeResponse represents a node response
 type NodeResponse struct {
-	Actions     []interface{} `json:"actions"`
-	DisplayName string        `json:"displayName"`
-	Executors   []struct {
-		CurrentExecutable Executable  `json:"currentExecutable"`
-		CurrentWorkUnit   interface{} `json:"currentWorkUnit"`
-		Idle              bool        `json:"idle"`
-		LikelyStuck       bool        `json:"likleyStuck"`
-		Number            int         `json:"number"`
-		Progress          int         `json:"progress"`
-	} `json:"executors"`
-	Icon                string   `json:"icon"`
-	IconClassName       string   `json:"iconClassName"`
-	Idle                bool     `json:"idle"`
-	JnlpAgent           bool     `json:"jnlpAgent"`
-	LaunchSupported     bool     `json:"launchSupported"`
-	LoadStatistics      struct{} `json:"loadStatistics"`
-	ManualLaunchAllowed bool     `json:"manualLaunchAllowed"`
+	Actions             []interface{}    `json:"actions"`
+	DisplayName         string           `json:"displayName"`
+	Executors           []NormalExecutor `json:"executors"`
+	Icon                string           `json:"icon"`
+	IconClassName       string           `json:"iconClassName"`
+	Idle                bool             `json:"idle"`
+	JnlpAgent           bool             `json:"jnlpAgent"`
+	LaunchSupported     bool             `json:"launchSupported"`
+	LoadStatistics      struct{}         `json:"loadStatistics"`
+	ManualLaunchAllowed bool             `json:"manualLaunchAllowed"`
 	MonitorData         struct {
 		Hudson_NodeMonitors_ArchitectureMonitor interface{} `json:"hudson.node_monitors.ArchitectureMonitor"`
 		Hudson_NodeMonitors_ClockMonitor        interface{} `json:"hudson.node_monitors.ClockMonitor"`
@@ -82,19 +121,12 @@ type NodeResponse struct {
 		Hudson_NodeMonitors_SwapSpaceMonitor      interface{} `json:"hudson.node_monitors.SwapSpaceMonitor"`
 		Hudson_NodeMonitors_TemporarySpaceMonitor interface{} `json:"hudson.node_monitors.TemporarySpaceMonitor"`
 	} `json:"monitorData"`
-	NumExecutors       int64    `json:"numExecutors"`
-	Offline            bool     `json:"offline"`
-	OfflineCause       struct{} `json:"offlineCause"`
-	OfflineCauseReason string   `json:"offlineCauseReason"`
-	OneOffExecutors    []struct {
-		CurrentExecutable interface{} `json:"currentExecutable"`
-		CurrentWorkUnit   interface{} `json:"currentWorkUnit"`
-		Idle              bool        `json:"idle"`
-		LikelyStuck       bool        `json:"likleyStuck"`
-		Number            int         `json:"number"`
-		Progress          int         `json:"progress"`
-	} `json:"oneOffExecutors"`
-	TemporarilyOffline bool `json:"temporarilyOffline"`
+	NumExecutors       int64            `json:"numExecutors"`
+	Offline            bool             `json:"offline"`
+	OfflineCause       struct{}         `json:"offlineCause"`
+	OfflineCauseReason string           `json:"offlineCauseReason"`
+	OneOffExecutors    []OneOffExecutor `json:"oneOffExecutors"`
+	TemporarilyOffline bool             `json:"temporarilyOffline"`
 }
 
 // Info returns a node's info
@@ -121,8 +153,8 @@ func (n *Node) Delete() (bool, error) {
 }
 
 // GetExecutors returns all executors
-func (n *Node) GetExecutors() (interface{}, error) {
-	var collection []interface{}
+func (n *Node) GetExecutors() ([]NormalExecutor, error) {
+	var collection []NormalExecutor
 	_, err := n.Poll()
 	if err != nil {
 		return collection, err
@@ -131,8 +163,8 @@ func (n *Node) GetExecutors() (interface{}, error) {
 }
 
 // GetOneOffExecutors returns all executors
-func (n *Node) GetOneOffExecutors() (interface{}, error) {
-	var collection []interface{}
+func (n *Node) GetOneOffExecutors() ([]OneOffExecutor, error) {
+	var collection []OneOffExecutor
 	_, err := n.Poll()
 	if err != nil {
 		return collection, err
